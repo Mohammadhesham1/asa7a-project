@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "اصحى - Sleep Cycle Alarm App",
   "scripts": {
-    "build": "cp -r src/* dist/ 2>/dev/null || mkdir -p dist && cp -r src/* dist/",
     "sync": "npx cap sync android",
     "open": "npx cap open android"
   },
