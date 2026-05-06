@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>اصحى</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Mada:wght@400;700;900&family=Tajawal:wght@300;400;500&family=Orbitron:wght@700;900&family=Cormorant+Garamond:ital,wght@1,400;1,600&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- CANVAS: نجوم -->
+  <canvas id="starCanvas"></canvas>
+
+  <!-- ===== SCREEN: HOME ===== -->
+  <div class="screen active" id="screen-home">
+    <div class="top-bar">
+      <button class="icon-btn" id="btn-settings" aria-label="الإعدادات">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </button>
+      <div class="date-display" id="home-date"></div>
+    </div>
+
+    <div class="moon-section">
+      <div class="moon-glow-ring">
+        <canvas id="moonCanvas" width="140" height="140"></canvas>
+      </div>
+      <div class="moon-phase-label" id="moon-phase-label"></div>
+    </div>
+
+    <div class="app-title">اصحى</div>
+    <div class="app-tagline">صحّى في آخر دورة نوم وهتحس إنك اتولدت من جديد</div>
+
+    <div class="divider-gold"></div>
+
+    <div class="tabs-row">
+      <button class="tab-pill active" id="tab-wake" onclick="setTab('wake')">هتصحى امتى؟</button>
+      <button class="tab-pill" id="tab-sleep" onclick="setTab('sleep')">هتنام امتى؟</button>
+    </div>
+
+    <div class="input-card glass">
+      <div class="input-label" id="input-label">امتى عايز تصحى؟</div>
+      <div class="time-picker-row">
+        <div class="scroll-picker" id="picker-hour"></div>
+        <div class="time-colon">:</div>
+        <div class="scroll-picker" id="picker-min"></div>
+      </div>
+      <div class="ampm-row">
+        <button class="ampm-pill active" id="ampm-am" onclick="setAmPm('am')">الصبح</button>
+        <button class="ampm-pill" id="ampm-pm" onclick="setAmPm('pm')">بالليل</button>
+      </div>
+      <button class="ghost-btn" onclick="setNow()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        الوقت اللي دلوقتي
+      </button>
+    </div>
+
+    <button class="cta-btn" onclick="calculate()">احسب الدورات</button>
+
+    <div class="stat-capsules">
+      <div class="stat-cap">٩٠ د / دورة</div>
+      <div class="stat-cap">٥–٦ دورات كويسين</div>
+      <div class="stat-cap">١٤ د للنوم</div>
+    </div>
+  </div>
+
+  <!-- ===== SCREEN: RESULTS ===== -->
+  <div class="screen" id="screen-results">
+    <div class="top-bar">
+      <button class="icon-btn" onclick="goBack('home')">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <div class="screen-title">النتايج</div>
+    </div>
+    <div class="results-header" id="results-header"></div>
+    <div class="results-subtitle" id="results-subtitle"></div>
+    <div class="divider-gold"></div>
+    <div class="results-list" id="results-list"></div>
+    <div class="sticky-bottom">
+      <button class="cta-btn" onclick="goToAlarmSetup()">ضبط منبه ذكي للكل</button>
+    </div>
+  </div>
+
+  <!-- ===== SCREEN: ALARM SETUP ===== -->
+  <div class="screen" id="screen-alarm-setup">
+    <div class="top-bar">
+      <button class="icon-btn" onclick="goBack('results')">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <div class="screen-title">اصحى ذكي</div>
+    </div>
+
+    <div class="explain-card glass">
+      المنبه هيرن على كل دورة من الدورة اللي تختارها، لما تصحى هيوقف — ولو نمت تاني هيرن من أول وجديد
+    </div>
+
+    <div class="section-label">ابدأ من أنهي دورة؟</div>
+    <div class="cycles-scroll" id="cycles-scroll"></div>
+
+    <div class="section-label">نغمة المنبه</div>
+    <div class="tone-toggle-row">
+      <button class="tone-btn active" id="tone-default" onclick="setTone('default')">الافتراضي</button>
+      <button class="tone-btn" id="tone-custom" onclick="setTone('custom')">اختار من جهازك</button>
+    </div>
+    <div class="custom-tone-row" id="custom-tone-row" style="display:none">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+      <span id="custom-tone-name">مفيش ملف اتاختار</span>
+    </div>
+
+    <div class="toggle-row">
+      <div class="toggle-info">
+        <div class="toggle-label">اهتزاز</div>
+      </div>
+      <label class="toggle-switch">
+        <input type="checkbox" id="toggle-vibration" checked />
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <div class="toggle-row">
+      <div class="toggle-info">
+        <div class="toggle-label">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          يرن حتى لو التليفون على صامت
+        </div>
+        <div class="toggle-sub">هيرن بأعلى صوت حتى لو الصوت مقفول</div>
+      </div>
+      <label class="toggle-switch">
+        <input type="checkbox" id="toggle-override" checked />
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <div class="section-label">شاشة الرنين</div>
+    <div class="ring-screen-selector" id="ring-screen-selector"></div>
+
+    <div style="height: 100px"></div>
+    <div class="sticky-bottom">
+      <button class="cta-btn" onclick="saveAndActivate()">احفظ وفعّل</button>
+    </div>
+  </div>
+
+  <!-- ===== SCREEN: RINGING ===== -->
+  <div class="screen" id="screen-ring">
+    <div class="ring-bg" id="ring-bg"></div>
+    <div class="ring-content">
+      <div class="ring-moon-wrap">
+        <canvas id="ringMoonCanvas" width="200" height="200"></canvas>
+        <div class="ring-ripples" id="ring-ripples"></div>
+      </div>
+      <div class="ring-time" id="ring-time"></div>
+      <div class="ring-cycle" id="ring-cycle"></div>
+      <div class="ring-message" id="ring-message"></div>
+      <div class="ring-buttons">
+        <button class="ring-btn-outline" onclick="nextCycle()">الدورة الجاية</button>
+        <button class="ring-btn-solid" onclick="confirmAwake()">اصحى</button>
+      </div>
+      <button class="dim-btn" onclick="dimScreen()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        خفض الإضاءة ٦٠٪
+      </button>
+    </div>
+  </div>
+
+  <!-- ===== SCREEN: SETTINGS ===== -->
+  <div class="screen" id="screen-settings">
+    <div class="top-bar">
+      <button class="icon-btn" onclick="goBack('home')">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <div class="screen-title">الإعدادات</div>
+    </div>
+
+    <div class="settings-section">
+      <div class="settings-section-title">المظهر</div>
+      <div class="setting-row">
+        <span>الثيم</span>
+        <div class="three-way">
+          <button class="three-btn active" onclick="setTheme('auto',this)">تلقائي</button>
+          <button class="three-btn" onclick="setTheme('dark',this)">ليل</button>
+          <button class="three-btn" onclick="setTheme('light',this)">نهار</button>
+        </div>
+      </div>
+      <div class="setting-row">
+        <span>اللغة</span>
+        <div class="three-way">
+          <button class="three-btn active" onclick="setLang('ar',this)">عربي</button>
+          <button class="three-btn" onclick="setLang('en',this)">English</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider-gold"></div>
+
+    <div class="settings-section">
+      <div class="settings-section-title">شاشات الرنين</div>
+      <div id="ring-screens-list"></div>
+      <button class="ghost-btn add-screen-btn" onclick="showAddRingScreen()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        شاشة رنين جديدة
+      </button>
+    </div>
+
+    <div class="divider-gold"></div>
+
+    <div class="settings-section">
+      <div class="settings-section-title">المنبهات</div>
+      <div class="toggle-row">
+        <div class="toggle-info"><div class="toggle-label">اهتزاز</div></div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="settings-vibration" checked />
+          <span class="slider"></span>
+        </label>
+      </div>
+      <div class="toggle-row">
+        <div class="toggle-info">
+          <div class="toggle-label">يرن حتى لو التليفون على صامت</div>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="settings-override" checked />
+          <span class="slider"></span>
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== MODAL: ADD RING SCREEN ===== -->
+  <div class="modal-overlay" id="modal-ring-screen">
+    <div class="modal-card glass">
+      <div class="modal-header">
+        <div class="modal-title">شاشة رنين جديدة</div>
+        <button class="icon-btn" onclick="closeModal('modal-ring-screen')">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+
+      <div class="section-label">اختار لون الخلفية</div>
+      <div class="color-preview-row">
+        <div class="color-preview-circle" id="color-preview"></div>
+        <input type="text" class="hex-input" id="hex-input" value="#050810" oninput="onHexInput(this.value)" />
+      </div>
+      <canvas id="colorWheel" width="260" height="260"></canvas>
+      <div class="brightness-row">
+        <span class="toggle-sub">الإضاءة</span>
+        <input type="range" id="brightness-slider" min="0" max="100" value="20" oninput="onBrightnessChange(this.value)" class="brightness-range" />
+      </div>
+
+      <div class="section-label">الكلام اللي هيظهر</div>
+      <div class="three-way" style="margin-bottom:10px">
+        <button class="three-btn active" id="msg-lang-ar" onclick="setMsgLang('ar',this)">عربي</button>
+        <button class="three-btn" id="msg-lang-en" onclick="setMsgLang('en',this)">English</button>
+      </div>
+      <input type="text" class="message-input" id="ring-message-input" placeholder="مثلاً: صباح النور يا نجم" dir="rtl" />
+
+      <div class="section-label">اسم الشاشة</div>
+      <input type="text" class="message-input" id="ring-screen-name-input" placeholder="مثلاً: الشاشة الافتراضية" dir="rtl" />
+
+      <button class="cta-btn" style="margin-top:20px" onclick="saveRingScreen()">احفظ الشاشة</button>
+    </div>
+  </div>
+
+  <!-- ===== MODAL: CONFIRM AWAKE ===== -->
+  <div class="modal-overlay" id="modal-confirm-awake">
+    <div class="modal-card glass" style="text-align:center">
+      <div class="modal-title" style="margin-bottom:16px">متأكد إنك صحيت؟</div>
+      <div class="toggle-sub" style="margin-bottom:24px">لو نمت تاني المنبه هيرن في الدورة الجاية</div>
+      <div style="display:flex; gap:12px">
+        <button class="ring-btn-outline" style="flex:1" onclick="nextCycle()">لا، الدورة الجاية</button>
+        <button class="ring-btn-solid" style="flex:1" onclick="finallyAwake()">آه، صحيت خلاص</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="moonphase.js"></script>
+  <script src="stars.js"></script>
+  <script src="colorwheel.js"></script>
+  <script src="alarm.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
